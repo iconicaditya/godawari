@@ -95,6 +95,19 @@ create table if not exists contact_messages (
 -- The app also supports fallback credentials without a database:
 -- admin@godawari.local / admin123 and customer@godawari.local / password
 
+insert into users (name, email, password_hash, roles)
+values (
+  'Godawari Admin',
+  'admin@godawari.local',
+  '$2b$12$rebDDX6CqPs7i8u/7DuIk.A6baE0nsZp3VWUvFQiRe35P255x/K0C',
+  array['admin']
+)
+on conflict (email) do update set
+  name = excluded.name,
+  password_hash = excluded.password_hash,
+  roles = excluded.roles,
+  updated_at = now();
+
 insert into plants (slug, name, botanical_name, category, price, compare_at_price, short_description, description, care_level, light, water, height, images, tags, in_stock, stock_count, featured, new_arrival, bestseller, rating, review_count)
 values
 ('monstera-deliciosa', 'Monstera Deliciosa', 'Monstera deliciosa', 'indoor', 1450, 1800, 'Sculptural fenestrated leaves for refined homes.', 'A heritage favourite from the Godawari greenhouses.', 'easy', 'Bright, indirect', 'Weekly', '60–90 cm', array['https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=1200&q=80'], array['statement','tropical'], true, 24, true, false, true, 4.9, 142),
