@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSession as useNextAuthSession } from "next-auth/react";
+import { normalizeRoles } from "@/lib/roles";
 
 export type LocalUser = {
   id: string;
@@ -178,14 +179,15 @@ export function useSession() {
 }
 
 function makeUserFromSession(email: string, roles: string[], name?: string, id = "session-user"): LocalUser {
+  const normalizedRoles = normalizeRoles(roles);
   return {
     id,
     handle: email,
-    roles,
+    roles: normalizedRoles,
     firstName: name ?? email.split("@")[0],
-    hasRole: (role) => roles.includes(role),
+    hasRole: (role) => normalizedRoles.includes(role as "customer" | "admin"),
     requireRole: (role) => {
-      if (!roles.includes(role)) throw new Error(`Access denied - role '${role}' required`);
+      if (!normalizedRoles.includes(role as "customer" | "admin")) throw new Error(`Access denied - role '${role}' required`);
     },
   };
 }

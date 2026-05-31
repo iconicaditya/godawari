@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { normalizeRoles } from "@/lib/roles";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -23,7 +24,8 @@ export async function findUserByEmail(email: string): Promise<DbUser | null> {
     `select id, name, email, password_hash, roles from users where lower(email) = lower($1) limit 1`,
     [email]
   );
-  return rows[0] ?? null;
+  const user = rows[0];
+  return user ? { ...user, roles: normalizeRoles(user.roles) } : null;
 }
 
 export async function createUser(input: { name?: string; email: string; passwordHash: string }): Promise<DbUser> {
@@ -37,5 +39,5 @@ export async function createUser(input: { name?: string; email: string; password
      returning id, name, email, password_hash, roles`,
     [input.name ?? null, input.email, input.passwordHash]
   );
-  return rows[0];
+  return { ...rows[0], roles: normalizeRoles(rows[0].roles) };
 }

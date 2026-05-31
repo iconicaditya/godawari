@@ -3,15 +3,30 @@
 
 create extension if not exists pgcrypto;
 
+do $$ begin
+  create type app_role as enum ('customer', 'admin');
+exception
+  when duplicate_object then null;
+end $$;
+
 create table if not exists users (
   id uuid primary key default gen_random_uuid(),
   name text,
   email text not null unique,
   password_hash text not null,
-  roles text[] not null default array['customer'],
+  roles app_role[] not null default array['customer']::app_role[],
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table users
+  alter column roles set default array['customer']::app_role[];
+
+alter table users
+  drop constraint if exists users_roles_not_empty;
+
+alter table users
+  add constraint users_roles_not_empty check (cardinality(roles) > 0);
 
 create table if not exists plants (
   id uuid primary key default gen_random_uuid(),

@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { findUserByEmail } from "@/lib/db";
+import { normalizeRoles } from "@/lib/roles";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -36,7 +37,7 @@ export const authConfig: NextAuthOptions = {
             id: dbUser.id,
             name: dbUser.name ?? dbUser.email,
             email: dbUser.email,
-            roles: dbUser.roles,
+            roles: normalizeRoles(dbUser.roles),
           };
         }
 
@@ -48,14 +49,15 @@ export const authConfig: NextAuthOptions = {
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.roles = user.roles ?? [];
+        token.roles = normalizeRoles(user.roles);
       }
+      token.roles = normalizeRoles(token.roles);
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id ?? "";
-        session.user.roles = token.roles ?? [];
+        session.user.roles = normalizeRoles(token.roles);
       }
       return session;
     },
