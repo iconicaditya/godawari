@@ -13,8 +13,8 @@ const fallbackUsers = [
   {
     id: "local-admin",
     name: "Godawari Admin",
-    email: "admin@godawari.local",
-    password: "admin123",
+    email: "admin@gmail.com",
+    password: "Admin@123",
     roles: ["admin"],
   },
   {

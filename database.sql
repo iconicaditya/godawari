@@ -98,8 +98,8 @@ create table if not exists contact_messages (
 insert into users (name, email, password_hash, roles)
 values (
   'Godawari Admin',
-  'admin@godawari.local',
-  '$2b$12$rebDDX6CqPs7i8u/7DuIk.A6baE0nsZp3VWUvFQiRe35P255x/K0C',
+  'admin@gmail.com',
+  '$2b$12$2XzZurivPQmQjkTeCDSp4O4ejwAQUnxb.vehDMZbYcRAT2i4Q0Ccy',
   array['admin']
 )
 on conflict (email) do update set
